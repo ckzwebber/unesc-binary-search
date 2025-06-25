@@ -19,7 +19,7 @@ npm install
 ## Uso
 
 ```bash
-node index.js
+node script.js
 ```
 
 Em seguida, siga as instruções na linha de comando para buscar um Pokémon pelo nome.  
