@@ -57,71 +57,100 @@ window.addEventListener("DOMContentLoaded", () => {
       const infoContainer = document.createElement("div");
       infoContainer.innerHTML = `
         <h3 style="color: #2563eb; margin-bottom: 16px; font-size: 24px;">${details.name.charAt(0).toUpperCase() + details.name.slice(1)}</h3>
+        
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
-      <div style="background: #f3f4f6; padding: 8px; border-radius: 6px;">
-        <strong>ID:</strong> #${String(details.id).padStart(3, "0")}
-      </div>
-      <div style="background: #f3f4f6; padding: 8px; border-radius: 6px;">
-        <strong>Ordem:</strong> ${details.order}
-      </div>
-      <div style="background: #f3f4f6; padding: 8px; border-radius: 6px;">
+          <div style="background: #f3f4f6; padding: 8px; border-radius: 6px;">
+        <strong>ID Nacional:</strong> #${String(details.id).padStart(3, "0")}
+          </div>
+          <div style="background: #f3f4f6; padding: 8px; border-radius: 6px;">
+        <strong>Ordem Pokédex:</strong> ${details.order}
+          </div>
+          <div style="background: #f3f4f6; padding: 8px; border-radius: 6px;">
         <strong>Peso:</strong> ${(details.weight / 10).toFixed(1)} kg
-      </div>
-      <div style="background: #f3f4f6; padding: 8px; border-radius: 6px;">
+          </div>
+          <div style="background: #f3f4f6; padding: 8px; border-radius: 6px;">
         <strong>Altura:</strong> ${(details.height / 10).toFixed(1)} m
-      </div>
+          </div>
         </div>
+
         <div style="margin-bottom: 16px;">
-      <strong style="color: #1f2937;">Tipos:</strong>
-      <div style="gap: 8px; margin-top: 8px;">
+          <strong style="color: #1f2937;">Tipos:</strong>
+          <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; justify-content: center;">
         ${details.types
-          .map((type) => `<span style="background: #3b82f6; color: white; padding: 4px 12px; border-radius: 16px; font-size: 12px; margin-right: 8px; text-transform: uppercase;">${type.type.name}</span>`)
+          .map((type) => `<span style="background: #3b82f6; color: white; padding: 6px 12px; border-radius: 16px; font-size: 12px; text-transform: uppercase; font-weight: 600;">${type.type.name}</span>`)
           .join("")}
-      </div>
+          </div>
         </div>
+
         <div style="margin-bottom: 16px;">
-      <strong style="color: #1f2937;">Habilidades:</strong>
-      <div style="margin-top: 8px; margin-bottom: 8px;">
+          <strong style="color: #1f2937;">Habilidades:</strong>
+          <div style="margin-top: 8px;">
         ${details.abilities
           .map(
             (ability) => `
-        <div style="background: #10b981; color: white; padding: 8px 12px; border-radius: 12px; font-size: 12px; margin-bottom: 8px; display: block;">
+            <div style="background: ${ability.is_hidden ? "#f59e0b" : "#10b981"}; color: white; padding: 10px 12px; border-radius: 12px; font-size: 12px; margin-bottom: 8px;">
           <div style="font-weight: bold; margin-bottom: 2px;">
-            ${ability.ability.name.charAt(0).toUpperCase() + ability.ability.name.slice(1).replace("-", " ")}
-            ${ability.is_hidden ? '<span style="background: rgba(255,255,255,0.3); padding: 2px 6px; border-radius: 8px; font-size: 10px; margin-left: 8px;">OCULTA</span>' : ""}
+            ${ability.ability.name.charAt(0).toUpperCase() + ability.ability.name.slice(1).replace(/-/g, " ")}
+            ${ability.is_hidden ? '<span style="background: rgba(255,255,255,0.3); padding: 2px 6px; border-radius: 8px; font-size: 10px; margin-left: 2px;">OCULTA</span>' : ""}
           </div>
           <div style="font-size: 10px; opacity: 0.9;">
-            Slot: ${ability.slot}
+            Slot: ${ability.slot} | ${ability.is_hidden ? "Habilidade especial rara" : "Habilidade padrão"}
           </div>
-        </div>
-          `
+            </div>
+            `
           )
           .join("")}
-      </div>
+          </div>
         </div>
+
         <div style="margin-bottom: 16px;">
-      <strong style="color: #1f2937;">Estatísticas Base:</strong>
-      <div style="margin-top: 8px;">
+          <strong style="color: #1f2937;">Movimentos Disponíveis:</strong>
+          <div style="background: #f8fafc; padding: 8px; border-radius: 6px; margin-top: 8px;">
+        <span style="color: #6b7280; font-size: 12px;">Total de movimentos: ${details.moves.length}</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <strong style="color: #1f2937;">Estatísticas Base (Total: ${details.stats.reduce((sum, stat) => sum + stat.base_stat, 0)}):</strong>
+          <div style="margin-top: 8px;">
         ${details.stats
           .map(
             (stat) => `
-          <div style="margin-bottom: 8px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
-          <span style="font-size: 12px; text-transform: capitalize;">${stat.stat.name.replace("-", " ")}</span>
-          <span style="font-weight: bold; color: #374151;">${stat.base_stat}</span>
-        </div>
-        <div style="background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden;">
-          <div style="background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981); height: 100%; width: ${Math.min((stat.base_stat / 200) * 100, 100)}%; transition: width 0.3s ease;"></div>
-        </div>
+            <div style="margin-bottom: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+            <span style="font-size: 12px; text-transform: capitalize; font-weight: 500;">${stat.stat.name.replace(/-/g, " ")}</span>
+            <span style="font-weight: bold; color: #374151;">${stat.base_stat}</span>
           </div>
-        `
+          <div style="background: #e5e7eb; height: 8px; border-radius: 4px; overflow: hidden;">
+            <div style="background: ${stat.base_stat >= 100 ? "#10b981" : stat.base_stat >= 70 ? "#f59e0b" : "#ef4444"}; height: 100%; width: ${Math.min(
+              (stat.base_stat / 200) * 100,
+              100
+            )}%; transition: width 0.3s ease;"></div>
+          </div>
+            </div>
+            `
           )
           .join("")}
-      </div>
+          </div>
         </div>
+
+        <div style="margin-bottom: 16px;">
+          <strong style="color: #1f2937;">Localização de Sprites:</strong>
+          <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; justify-content: center;">
+        ${details.sprites.front_default ? '<span style="background: #6366f1; color: white; padding: 4px 8px; border-radius: 8px; font-size: 11px;">Frente</span>' : ""}
+        ${details.sprites.back_default ? '<span style="background: #6366f1; color: white; padding: 4px 8px; border-radius: 8px; font-size: 11px;">Costas</span>' : ""}
+        ${details.sprites.front_shiny ? '<span style="background: #fbbf24; color: white; padding: 4px 8px; border-radius: 8px; font-size: 11px;">Shiny Frente</span>' : ""}
+        ${details.sprites.back_shiny ? '<span style="background: #fbbf24; color: white; padding: 4px 8px; border-radius: 8px; font-size: 11px;">Shiny Costas</span>' : ""}
+          </div>
+        </div>
+
         <div style="background: #f3f4f6; padding: 12px; border-radius: 8px; border-left: 4px solid #6366f1;">
-      <p style="margin: 0; font-size: 14px; color: #6b7280;"><strong>Experiência Base:</strong> ${details.base_experience}</p>
-      <p style="margin: 8px 0 0 0; font-size: 14px; color: #6b7280;"><strong>É Padrão:</strong> ${details.is_default ? "Sim" : "Não"}</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+        <p style="margin: 0; font-size: 14px; color: #6b7280;"><strong>Experiência Base:</strong> ${details.base_experience || "N/A"}</p>
+        <p style="margin: 0; font-size: 14px; color: #6b7280;"><strong>É Forma Padrão:</strong> ${details.is_default ? "Sim" : "Não"}</p>
+        <p style="margin: 0; font-size: 14px; color: #6b7280;"><strong>Índice de Felicidade:</strong> ${details.base_happiness || "N/A"}</p>
+        <p style="margin: 0; font-size: 14px; color: #6b7280;"><strong>Taxa de Captura:</strong> ${details.capture_rate || "N/A"}</p>
+          </div>
         </div>
       `;
       detailsPanelElement.appendChild(imageElement);
