@@ -1,0 +1,25 @@
+{
+  "name": "unesc-binary-search",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ckzwebber/unesc-binary-search.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ckzwebber/unesc-binary-search/issues"
+  },
+  "homepage": "https://github.com/ckzwebber/unesc-binary-search#readme",
+  "description": "",
+  "dependencies": {
+    "electron": "^37.1.0",
+    "node-fetch": "^3.3.2"
+  }
+}

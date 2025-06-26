@@ -1,77 +1,80 @@
 const readline = require("readline");
 
 async function main() {
-  const lerLinha = readline.createInterface({
+  const respostaLista = await fetch("https://pokeapi.co/api/v2/pokemon?limit=2000");
+  const dadosLista = await respostaLista.json();
+
+  const listaPokemons = dadosLista.results.map((pokemon) => ({
+    nome: pokemon.name.toLowerCase(),
+    url: pokemon.url,
+  }));
+
+  listaPokemons.sort((first, another) => first.nome.localeCompare(another.nome));
+
+  const leitor = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
   });
+  const perguntaAoUsuario = (texto) => new Promise((res) => leitor.question(texto, res));
 
-  const pergunta = (questao) => {
-    return new Promise((resolve) => {
-      lerLinha.question(questao, resolve);
-    });
-  };
+  const cacheDetalhes = new Map();
 
-  let listaPokemon = await fetch("https://pokeapi.co/api/v2/pokemon?limit=-1");
-  listaPokemon = await listaPokemon.json();
-  let pokemons = listaPokemon.results;
-  let arrayPokemonNomes = [];
+  while (true) {
+    const entradaUsuario = (await perguntaAoUsuario("Digite o nome do Pokémon (ou um número para sair): ")).trim().toLowerCase();
 
-  pokemons.forEach((pokemon) => {
-    arrayPokemonNomes.push(pokemon.name);
-  });
-  arrayPokemonNomes.sort();
-  let pokemonsOrdenados = pokemons.sort((a, b) => a.name.localeCompare(b.name));
-
-  let pokemonPesquisado;
-
-  do {
-    pokemonPesquisado = await pergunta("Digite o nome do Pokémon que deseja buscar (ou um número para sair): ");
-
-    if (!isNaN(pokemonPesquisado) && pokemonPesquisado.trim() !== "") {
+    if (entradaUsuario === "" || !isNaN(entradaUsuario)) {
       console.log("Programa encerrado.");
       break;
     }
 
-    const resposta = pesquisaBinaria(arrayPokemonNomes, pokemonPesquisado.toLowerCase());
-
-    if (resposta === false) {
-      console.log("Pokemon não encontrado");
+    const pokemonEncontrado = buscaBinaria(listaPokemons, entradaUsuario);
+    if (!pokemonEncontrado) {
+      console.log("Pokémon não encontrado.\n");
       continue;
     }
 
-    let pokemonEncontrado = pokemonsOrdenados[resposta];
-
-    let pokemonDetalhes = await fetch(pokemonEncontrado.url);
-    pokemonDetalhes = await pokemonDetalhes.json();
-    console.log("\n=== Detalhes do Pokémon ===");
-    console.log("Nome: " + pokemonDetalhes.name);
-    console.log("Tipos: " + pokemonDetalhes.types.map((tipo) => tipo.type.name).join(", "));
-    console.log("Número Pokedex: " + pokemonDetalhes.id);
-    console.log("Peso: " + pokemonDetalhes.weight);
-    console.log("Altura: " + pokemonDetalhes.height);
-    console.log("==========================\n");
-  } while (true);
-
-  lerLinha.close();
-
-  function pesquisaBinaria(listaPokemon, pokemonPesquisado) {
-    let comeco = 0;
-    let fim = listaPokemon.length - 1;
-
-    while (comeco <= fim) {
-      let meioQuebrado = (comeco + fim) / 2;
-      let meio = Math.floor(meioQuebrado);
-
-      if (listaPokemon[meio] === pokemonPesquisado) return meio;
-      else if (listaPokemon[meio] < pokemonPesquisado) {
-        comeco = meio + 1;
-      } else {
-        fim = meio - 1;
+    let detalhes = cacheDetalhes.get(pokemonEncontrado.nome);
+    if (!detalhes) {
+      try {
+        const respostaDetalhes = await fetch(pokemonEncontrado.url);
+        if (!respostaDetalhes.ok) throw new Error();
+        detalhes = await respostaDetalhes.json();
+        cacheDetalhes.set(pokemonEncontrado.nome, detalhes);
+      } catch {
+        console.log("Erro ao buscar detalhes.\n");
+        continue;
       }
     }
-    return false;
+
+    console.log("\n=== Detalhes do Pokémon ===");
+    console.log(`Nome: ${detalhes.name}`);
+    console.log(`Tipos: ${detalhes.types.map((type) => type.type.name).join(", ")}`);
+    console.log(`Número na Pokédex: ${detalhes.id}`);
+    console.log(`Peso: ${detalhes.weight}`);
+    console.log(`Altura: ${detalhes.height}`);
+    console.log("==========================\n");
   }
+
+  leitor.close();
+}
+
+function buscaBinaria(arrayPokemons, nomeAlvo) {
+  let inicio = 0;
+  let fim = arrayPokemons.length - 1;
+
+  while (inicio <= fim) {
+    const meio = Math.floor((inicio + fim) / 2);
+    const nomeDoMeio = arrayPokemons[meio].nome;
+
+    if (nomeDoMeio === nomeAlvo) {
+      return arrayPokemons[meio];
+    } else if (nomeDoMeio < nomeAlvo) {
+      inicio = meio + 1;
+    } else {
+      fim = meio - 1;
+    }
+  }
+  return null;
 }
 
 main();
