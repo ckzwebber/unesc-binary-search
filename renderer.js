@@ -83,7 +83,19 @@ window.addEventListener("DOMContentLoaded", () => {
       <strong style="color: #1f2937;">Habilidades:</strong>
       <div style="margin-top: 8px; margin-bottom: 8px;">
         ${details.abilities
-          .map((ability) => `<span style="background: #10b981; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; margin-right: 8px; display: inline-block;">${ability.ability.name}</span>`)
+          .map(
+            (ability) => `
+        <div style="background: #10b981; color: white; padding: 8px 12px; border-radius: 12px; font-size: 12px; margin-bottom: 8px; display: block;">
+          <div style="font-weight: bold; margin-bottom: 2px;">
+            ${ability.ability.name.charAt(0).toUpperCase() + ability.ability.name.slice(1).replace("-", " ")}
+            ${ability.is_hidden ? '<span style="background: rgba(255,255,255,0.3); padding: 2px 6px; border-radius: 8px; font-size: 10px; margin-left: 8px;">OCULTA</span>' : ""}
+          </div>
+          <div style="font-size: 10px; opacity: 0.9;">
+            Slot: ${ability.slot}
+          </div>
+        </div>
+          `
+          )
           .join("")}
       </div>
         </div>
