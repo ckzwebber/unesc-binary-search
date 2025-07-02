@@ -18,6 +18,13 @@ window.addEventListener("DOMContentLoaded", () => {
     performBinarySearch(inputElement.value.trim().toLowerCase());
   });
 
+  inputElement.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      performBinarySearch(inputElement.value.trim().toLowerCase());
+    }
+  });
+
   async function performBinarySearch(targetName) {
     stepsListElement.innerHTML = "";
     detailsPanelElement.innerHTML = "";
